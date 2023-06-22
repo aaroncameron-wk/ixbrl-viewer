@@ -1,7 +1,6 @@
 name: Build and publish NPM package
 
 on:
-  pull_request:
   workflow_dispatch:
     inputs:
       node_version:
