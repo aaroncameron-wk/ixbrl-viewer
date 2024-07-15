@@ -12,6 +12,7 @@
 @import url("accordian.less");
 @import url("loader.less");
 @import url("tabs.less");
+@import url("tooltip.less");
 @import (reference) "text-mixins.less";
 @import url("block-list.less");
 @import url("validation-report.less");
@@ -740,6 +741,10 @@
 
       tr.uri > td {
         white-space: nowrap;
+      }
+
+      tr.value > td {
+        overflow: visible;
       }
     }
 

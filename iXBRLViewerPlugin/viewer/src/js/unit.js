@@ -12,9 +12,9 @@ export class Unit {
                 .split('/');
         this._numerators = split[0].split('*');
         this._denominators = split.length > 1 ? split[1].split('*') : [];
+        this._isSimple = this._numerators.length === 1 && this._denominators.length === 0;
         this._isMonetary =
-                this._denominators.length === 0 &&
-                this._numerators.length === 1 &&
+                this._isSimple &&
                 this._reportSet.qname(this._numerators[0]).namespace === NAMESPACE_ISO4217;
         this._label = split
             .map(measure => {
@@ -41,6 +41,26 @@ export class Unit {
      */
     label() {
         return this._label;
+    }
+
+    /**
+     * Returns the qname of the first numerator in the unit
+     * @return {String} QName string of a measure
+     */
+    measure() {
+        return this._measure;
+    }
+
+    utrEntries() {
+        const utrMap = this._reportSet.utrMap();
+        const measures = [...this._numerators, ...this._denominators];
+        const utrEntries = [];
+        measures.forEach(measure => {
+            if (measure in utrMap) {
+                utrEntries.push(utrMap[measure]);
+            }
+        });
+        return utrEntries;
     }
 
     /**

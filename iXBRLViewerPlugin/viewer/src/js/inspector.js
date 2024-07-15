@@ -1,6 +1,10 @@
 // See COPYRIGHT.md for copyright information
 
 import $ from 'jquery'
+import { formatNumber, wrapLabel, truncateLabel, runGenerator, SHOW_FACT, viewerUniqueId } from "./util.js";
+import { ReportSearch } from "./search.js";
+import { IXBRLChart } from './chart.js';
+import { UnitLegend } from './unitlegend.js';
 import i18next from 'i18next';
 import jqueryI18next from 'jquery-i18next';
 import { formatNumber, wrapLabel, truncateLabel, runGenerator, SHOW_FACT, HIGHLIGHT_COLORS, viewerUniqueId } from "./util.js";
@@ -947,6 +951,33 @@ export class Inspector {
             tr.removeClass('truncated');
         }
 
+        let utrEntries = [];
+        if (item instanceof Fact) {
+            const unit = item.unit();
+            if (unit) {
+                utrEntries = unit.utrEntries();
+            }
+        }
+        const unitTooltipTrigger = $('tr.value .unit-tooltip', context);
+        unitTooltipTrigger.click(() => this.openUnitLegend())
+        unitTooltipTrigger.hide();
+        const unitTooltipContent = $('tr.value .unit-tooltip .tooltip-content', context);
+        unitTooltipContent.empty();
+        utrEntries.forEach((utrEntry) => {
+            unitTooltipTrigger.show();
+            const utrEntryElt = $("<span></span>");
+            utrEntryElt.append($("<b></b>").text(utrEntry.unitName));
+            if (utrEntry.symbol) {
+                utrEntryElt.append($("<span></span>").text(" (" + utrEntry.symbol + ")"));
+            }
+            if (utrEntry.definition !== utrEntry.unitName) {
+                utrEntryElt.append($("<br/>"));
+                utrEntryElt.append($("<i></i>").text(utrEntry.definition));
+            }
+            unitTooltipContent.append(utrEntryElt);
+            unitTooltipContent.append("<br/>");
+        });
+
         // Only enable text block viewer for escaped, text block facts.  This
         // ensure that we're only rendering fragments of the main documents, rather
         // than potentially arbitrary strings.
@@ -1082,6 +1113,11 @@ export class Inspector {
     analyseDimension(fact, dimensions) {
         const chart = new IXBRLChart();
         chart.analyseDimension(fact, dimensions);
+    }
+
+    openUnitLegend() {
+        const unitLegend = new UnitLegend();
+        unitLegend.showUnitLegend(this._reportSet.utrMap.values());
     }
 
     update() {
