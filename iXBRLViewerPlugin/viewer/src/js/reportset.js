@@ -98,6 +98,10 @@ export class ReportSet {
         return this._data.prefixes;
     }
 
+    utrMap() {
+        return this._data.utrMap;
+    }
+
     namespaceGroups() {
         const counts = {};
         for (const f of this.facts()) {

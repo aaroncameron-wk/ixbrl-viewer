@@ -8,6 +8,7 @@ import i18next from "i18next";
 export const SHOW_FACT = 'SHOW_FACT';
 
 export const NAMESPACE_ISO4217 = 'http://www.xbrl.org/2003/iso4217';
+export const NAMESPACE_UTR = 'http://www.xbrl.org/2009/utr';
 
 export const CALC_ARCROLE = "calc";
 export const CALC11_ARCROLE = "calc11";
@@ -222,10 +223,13 @@ export function getIXHiddenLinkStyle(domNode) {
  * @return {String} Measure Label
  */
 
-export function measureLabel(report, measure) {
-    const qname = report.qname(measure);
+export function measureLabel(reportSet, measure) {
+    const qname = reportSet.qname(measure);
     if (qname.namespace === NAMESPACE_ISO4217) {
         measure = i18next.t(`currencies:unitFormat${qname.localname}`, {defaultValue: qname.localname});
+    } else if (qname.namespace === NAMESPACE_UTR && reportSet.utrMap()[qname.qname]) {
+        const utrEntry = reportSet.utrMap()[qname.qname];
+        measure = utrEntry.symbol;
     } else if (measure.includes(':')) {
         measure = measure.split(':')[1];
     }
