@@ -217,6 +217,7 @@ export class iXBRLViewer {
             // We need to parse JSON first so that we can determine feature enablement before loading begins.
             const taxonomyData = iv._getTaxonomyData();
             const parsedTaxonomyData = taxonomyData && JSON.parse(taxonomyData);
+            window.parsedTaxonomyData = parsedTaxonomyData;
             iv.setFeatures((parsedTaxonomyData && parsedTaxonomyData["features"]) || [], window.location.search);
 
             const reportSet = new ReportSet(parsedTaxonomyData);
