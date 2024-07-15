@@ -92,6 +92,7 @@ class IXBRLViewerBuilder:
             "sourceReports": [],
             "features": [],
         }
+        self.utrMap = {}
         self.basenameSuffix = basenameSuffix
         self.currentTargetReport = None
         self.useStubViewer = useStubViewer
@@ -285,6 +286,10 @@ class IXBRLViewerBuilder:
         if f.isNumeric:
             if f.unit is not None and len(f.unit.measures[0]):
                 aspects['u'] = self.oimUnitString(f.unit)
+                for measures in f.unit.measures:
+                    for measure in measures:
+                        if measure in report.qnameUtrUnits and measure not in self.utrMap:
+                            self.utrMap[measure] = report.qnameUtrUnits[measure]
             else:
                 # The presence of the unit aspect is used by the viewer to
                 # identify numeric facts.  If the fact has no unit (invalid
@@ -493,6 +498,15 @@ class IXBRLViewerBuilder:
 
         self.taxonomyData["prefixes"] = self.nsmap.prefixmap
         self.taxonomyData["roles"] = self.roleMap.prefixmap
+
+        self.taxonomyData["utrMap"] = {
+            str(utrEntry.qname()): {
+                "unitName": utrEntry.unitName, # TODO: getattr(utrEntry, slot, None)
+                "definition": utrEntry.definition,
+                "symbol": utrEntry.symbol,
+            }
+            for utrQName, utrEntry in self.utrMap.items()
+        }
 
         if showValidations:
             self.taxonomyData["validation"] = self.validationErrors()
